@@ -13,6 +13,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Verify docker-compose.yml exists
+      run: |
+        echo "Current directory: $(pwd)"
+        ls -la docker-compose.yml
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -20,11 +25,11 @@ jobs:
 
     - name: Start services with Docker Compose
       run: |
-        docker compose up -d --build
-        echo "Waiting for services to start..."
+        docker compose --project-directory . up -d --build
+        echo "Waiting for services..."
         sleep 60
         echo "Container status:"
-        docker compose ps
+        docker compose --project-directory . ps
 
     - name: Install Newman
       run: npm install -g newman
@@ -34,4 +39,4 @@ jobs:
 
     - name: Stop services
       if: always()
-      run: docker compose down
+      run: docker compose --project-directory . down
