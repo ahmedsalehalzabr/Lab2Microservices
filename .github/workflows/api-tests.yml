@@ -20,7 +20,11 @@ jobs:
 
     - name: Start services with Docker Compose
       run: |
-        docker compose up -d --build --wait --wait-timeout 120
+        docker compose up -d --build
+        echo "Waiting for services to start..."
+        sleep 60
+        echo "Container status:"
+        docker compose ps
 
     - name: Install Newman
       run: npm install -g newman
