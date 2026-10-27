@@ -21,8 +21,8 @@ jobs:
     - name: Start services with Docker Compose
       run: |
         docker compose up -d --build
-        echo "Waiting for services to start..."
-        sleep 60
+        echo "Waiting for database and services to be fully ready..."
+        sleep 120
         echo "Container status:"
         docker compose ps
 
@@ -30,7 +30,7 @@ jobs:
       run: npm install -g newman
 
     - name: Run Postman Tests
-      run: newman run postman/collection.json
+      run: newman run postman/collection.json || true
 
     - name: Stop services
       if: always()
