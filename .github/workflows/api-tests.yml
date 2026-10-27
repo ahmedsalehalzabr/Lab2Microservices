@@ -21,16 +21,27 @@ jobs:
     - name: Start services with Docker Compose
       run: |
         docker compose up -d --build
-        echo "Waiting for database and services to be fully ready..."
-        sleep 120
-        echo "Container status:"
-        docker compose ps
+        
+    - name: Wait for User Service to be ready
+      run: |
+        echo "Waiting for User Service to respond..."
+        for i in {1..30}; do
+          if curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/users/manage/health | grep -q "200"; then
+            echo "User Service is UP and READY!"
+            exit 0
+          fi
+          echo "Waiting... (attempt $i/30)"
+          sleep 5
+        done
+        echo "User Service did not start in time"
+        docker compose logs user-service
+        exit 1
 
     - name: Install Newman
       run: npm install -g newman
 
     - name: Run Postman Tests
-      run: newman run postman/collection.json || true
+      run: newman run postman/collection.json
 
     - name: Stop services
       if: always()
