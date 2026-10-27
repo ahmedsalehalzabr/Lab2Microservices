@@ -20,8 +20,8 @@ jobs:
 
     - name: Start services with Docker Compose
       run: |
-        docker-compose up -d --build
-        sleep 30
+        docker compose up -d --build
+        sleep 40
 
     - name: Install Newman
       run: npm install -g newman
@@ -31,4 +31,4 @@ jobs:
 
     - name: Stop services
       if: always()
-      run: docker-compose down 
+      run: docker compose down
