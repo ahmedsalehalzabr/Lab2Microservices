@@ -1,0 +1,34 @@
+name: API Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Start services with Docker Compose
+      run: |
+        docker-compose up -d --build
+        sleep 30
+
+    - name: Install Newman
+      run: npm install -g newman
+
+    - name: Run Postman Tests
+      run: newman run postman/collection.json
+
+    - name: Stop services
+      if: always()
+      run: docker-compose down 
